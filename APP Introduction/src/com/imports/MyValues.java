@@ -18,7 +18,7 @@ public final class MyValues {
     public static void connectionProperties() throws SQLException {
         Properties properties = new Properties();
         properties.setProperty("user", "root");
-        properties.setProperty("password", "Java.Dev.2020");
+        properties.setProperty("password", "*********");
 
         connection = DriverManager.getConnection(
                 CONNECTION_STRING + DATABASE_NAME, properties);
