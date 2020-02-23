@@ -26,32 +26,46 @@ public class Engine implements Runnable {
     @Override
     public void run() {
         //Ex 2
-        // this.removeObjects();
+         this.removeObjects();
 
         //Ex 3
-//        try {
-//            this.containsEmployee();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            this.containsEmployee();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //Ex 4
-        //this.employeesWithSalaryOver50000();
+        this.employeesWithSalaryOver50000();
 
         //Ex 5
-        //this.employeesFromDepartment();
+        this.employeesFromDepartment();
 
         //Ex 6
-//        try {
-//            addNewAddressAndUpdateEmployee();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            addNewAddressAndUpdateEmployee();
+        } catch (IOException e) {
+            e.printStackTrace();
+       }
 
         //Ex 7
         findAddressesWithThereEmployeeCount();
+        
+        //Ex 8
+        try {
+           getEmployeeWithProject();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+        
+        //Ex 9
+        findLatest10Projects();
+        
+        //Ex 10
+        increasesSalaries();
     }
 
+    
     //Ex 2
     private void removeObjects() {
         this.entityManager.getTransaction().begin();
@@ -191,5 +205,74 @@ public class Engine implements Runnable {
                         a.getTown(),
                         a.getEmployees().size())
         ));
+    }
+    
+    //Ex 8
+    private void getEmployeeWithProject() throws IOException {
+        System.out.println("Please, enter employee id: ");
+        int employeeId = Integer.parseInt(reader.readLine());
+
+        this.entityManager
+                .createQuery("select e from Employee e " +
+                        "where e.id = :employee ", Employee.class)
+                .setParameter("employee", employeeId)
+                .getResultStream()
+                .forEach(e -> {
+                    System.out.println(String.format("%s %s - %s",
+                            e.getFirstName(),
+                            e.getLastName(),
+                            e.getJobTitle()));
+                    e.getProjects()
+                            .stream()
+                            .sorted(Comparator.comparing(Project::getName))
+                            .forEach(p -> System.out.println(p.getName()));
+                });
+    }
+
+    //Ex 9
+    private void findLatest10Projects() {
+        this.entityManager
+                .createQuery("SELECT p from Project p " +
+                        "order by p.startDate desc ", Project.class)
+                .setMaxResults(10)
+                .getResultStream()
+                .sorted(Comparator.comparing(Project::getName))
+                .forEach(p -> {
+                    System.out.println(String.format(
+                            "Project name: %s\r\n" +
+                                    "Project Description: %s\r\n" +
+                                    "Project Start Date: %s\r\n" +
+                                    "Project End Date: %s\r\n",
+                            p.getName(),
+                            p.getDescription(),
+                            p.getStartDate(),
+                            p.getEndDate()
+                    ));
+                });
+    }
+
+    //Ex 10
+    private void increasesSalaries() {
+        this.entityManager.getTransaction().begin();
+        this.entityManager
+                .createQuery("update Employee e " +
+                        "set e.salary = e.salary * 1.12 " +
+                        "where e.department.id = 1 or e.department.id = 2 " +
+                        "or e.department.id = 4 or e.department.id = 11")
+                .executeUpdate();
+
+        this.entityManager
+                .createQuery("select e from Employee e " +
+                        "where e.department.id = 1 or e.department.id = 2 " +
+                        "or e.department.id = 4 or e.department.id = 11", Employee.class)
+                .getResultList()
+                .forEach(e -> System.out.println(
+                        String.format("%s %s ($%.2f)",
+                                e.getFirstName(),
+                                e.getLastName(),
+                                e.getSalary())
+                ));
+
+        this.entityManager.getTransaction().commit();
     }
 }
