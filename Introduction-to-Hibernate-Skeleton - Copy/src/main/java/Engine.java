@@ -63,6 +63,20 @@ public class Engine implements Runnable {
         
         //Ex 10
         increasesSalaries();
+        
+        //Ex 11
+        try {
+           removeTownsByGivenName();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+        
+        //Ex 12
+        try {
+           findEmployeesByFirstName();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
     }
 
     
@@ -274,5 +288,57 @@ public class Engine implements Runnable {
                 ));
 
         this.entityManager.getTransaction().commit();
+    }
+    
+    //Ex 11
+    private void removeTownsByGivenName() throws IOException {
+        System.out.println("Please, enter town name: ");
+        String townName = reader.readLine();
+
+        Town town = entityManager.createQuery("SELECT t FROM Town AS t " +
+                "WHERE t.name = :tName", Town.class)
+                .setParameter("tName", townName)
+                .getSingleResult();
+
+       List<Address> addresses = this.entityManager
+                .createQuery("select a from Address a " +
+                        "where a.town.name = :tName", Address.class)
+                .setParameter("tName", townName)
+                .getResultList();
+
+        String output = String.format(
+                "%d address in %s deleted",
+                addresses.size(),
+                townName);
+        System.out.println(output);
+
+        this.entityManager.getTransaction().begin();
+
+        addresses.forEach(address -> {
+            address.getEmployees().forEach(employee -> employee.setAddress(null));
+            address.setTown(null);
+            entityManager.remove(address);
+        });
+
+        this.entityManager.remove(town);
+        this.entityManager.getTransaction().commit();
+    }
+
+    //Ex 12
+    private void findEmployeesByFirstName() throws IOException {
+        String pattern = reader.readLine();
+
+        entityManager
+                .createQuery("select e from Employee e " +
+                        "where e.firstName like concat(:p, '%')", Employee.class)
+                .setParameter("p", pattern)
+                .getResultStream()
+                .forEach(e -> System.out.println(String.format(
+                        "%s %s - %s - ($%.2f)",
+                        e.getFirstName(),
+                        e.getLastName(),
+                        e.getJobTitle(),
+                        e.getSalary()
+                )));
     }
 }
