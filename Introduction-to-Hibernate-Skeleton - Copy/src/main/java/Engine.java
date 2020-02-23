@@ -179,6 +179,17 @@ public class Engine implements Runnable {
 
     //Ex 7
     private void findAddressesWithThereEmployeeCount() {
+        List<Address> addresses = entityManager.createQuery("SELECT a FROM Address a " +
+                "order by a.employees.size desc, a.town.id asc", Address.class)
+                .setMaxResults(10)
+                .getResultList();
 
+        addresses.forEach(a -> System.out.println(
+                String.format(
+                "%s, %s - %d employees",
+                        a.getText(),
+                        a.getTown(),
+                        a.getEmployees().size())
+        ));
     }
 }
