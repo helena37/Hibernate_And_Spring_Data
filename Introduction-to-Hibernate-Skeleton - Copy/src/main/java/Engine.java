@@ -43,43 +43,43 @@ public class Engine implements Runnable {
 
         //Ex 6
         try {
-            addNewAddressAndUpdateEmployee();
+            this.addNewAddressAndUpdateEmployee();
         } catch (IOException e) {
             e.printStackTrace();
        }
 
         //Ex 7
-        findAddressesWithThereEmployeeCount();
+        this.findAddressesWithThereEmployeeCount();
         
         //Ex 8
         try {
-           getEmployeeWithProject();
+           this.getEmployeeWithProject();
        } catch (IOException e) {
            e.printStackTrace();
        }
         
         //Ex 9
-        findLatest10Projects();
+        this.findLatest10Projects();
         
         //Ex 10
-        increasesSalaries();
+        this.increasesSalaries();
         
         //Ex 11
         try {
-           removeTownsByGivenName();
+           this.removeTownsByGivenName();
        } catch (IOException e) {
            e.printStackTrace();
        }
         
         //Ex 12
         try {
-           findEmployeesByFirstName();
+           this.findEmployeesByFirstName();
        } catch (IOException e) {
            e.printStackTrace();
        }
         
         //Ex 13
-        employeesMaximumSalaries();
+        this.employeesMaximumSalaries();
     }
 
     
