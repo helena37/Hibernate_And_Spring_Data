@@ -77,6 +77,9 @@ public class Engine implements Runnable {
        } catch (IOException e) {
            e.printStackTrace();
        }
+        
+        //Ex 13
+        employeesMaximumSalaries();
     }
 
     
@@ -340,5 +343,16 @@ public class Engine implements Runnable {
                         e.getJobTitle(),
                         e.getSalary()
                 )));
+    }
+    
+    //Ex 13
+    private void employeesMaximumSalaries() {
+        this.entityManager.createQuery(
+                "SELECT e.department.name , MAX(e.salary) " +
+                        "FROM Employee e " +
+                        "GROUP BY e.department.id " +
+                        "HAVING MAX(e.salary) NOT BETWEEN 30000 AND 70000", Object[].class)
+                .getResultList()
+                .forEach(e -> System.out.println(e[0] + " - " + e[1]));
     }
 }
